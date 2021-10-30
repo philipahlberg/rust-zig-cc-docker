@@ -1,2 +1,6 @@
+[env]
+CC = "zig-cc"
+CXX = "zig-cxx"
+
 [target.x86_64-unknown-linux-musl]
 linker = "zig-cc"
