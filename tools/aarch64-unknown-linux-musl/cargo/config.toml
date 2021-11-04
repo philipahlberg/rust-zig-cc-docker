@@ -4,3 +4,4 @@ CXX = "zig-cxx"
 
 [target.aarch64-unknown-linux-musl]
 linker = "zig-cc"
+rustflags = ["-C", "target-feature=+crt-static"]
