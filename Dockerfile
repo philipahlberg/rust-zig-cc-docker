@@ -3,10 +3,14 @@ FROM debian:11-slim
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y \
-    build-essential \
+    musl-tools \
+    musl-dev \
+    musl \
+    make \
+    xz-utils \
     curl
 
-ARG TARGET=x86_64-unknown-linux-gnu
+ARG TARGET=aarch64-unknown-linux-musl
 
 # Set up Zig
 ENV ZIG_HOME=/usr/local/zig \
@@ -25,8 +29,15 @@ ENV RUSTUP_HOME=/usr/local/rustup \
 ARG RUST_TOOLCHAIN=nightly
 RUN curl https://sh.rustup.rs -sSf | sh -s -- \
     --profile minimal --default-toolchain "$RUST_TOOLCHAIN" -y && \
-    rustup target add $TARGET
+    rustup target add $TARGET && \
+    rustup default $RUST_TOOLCHAIN-$TARGET
 
 # Set up Cargo/Zig interop
 COPY tools/$TARGET/zig $ZIG_HOME/
 COPY tools/$TARGET/cargo $CARGO_HOME/
+
+WORKDIR /project
+
+COPY src src/
+COPY Cargo.toml .
+COPY Cargo.lock .
